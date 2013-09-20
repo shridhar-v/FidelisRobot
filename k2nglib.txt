@@ -1,0 +1,48 @@
+*** Settings ***
+Library           Selenium2Library
+
+*** Variables ***
+@{TabName}        My Apps    All Community Apps
+
+*** Keywords ***
+Login As Staff
+    [Arguments]    ${username}    ${password}
+    Input Text    login_email    ${username}
+    Input Password    login_password    ${password}
+    Click Button    css=.x_signin_button
+    Wait Until Page Contains Element    header_wrap    1000
+    AjaxWait    15
+
+Click On 'Create New App'
+    Click Element    jquery=.create_new_app:visible
+    AjaxWait    15
+    Click Element    jquery=a[name="createNewApp"]:visible
+    AjaxWait    15
+
+Open Tab
+    [Arguments]    ${TabName}
+    [Documentation]    either "My Apps" or "All Community Apps"
+    Sleep    5s
+    Run Keyword If    '${TabName}'=='@{TabName}[0]'    Click Link    myApps
+    Run Keyword If    '${TabName}==@{TabName}[1]'    Click Link    communityApps
+    AjaxWait    15
+
+Cancel
+    Click Element    cancelEdit
+    AjaxWait    15
+
+AjaxWait
+    [Arguments]    ${TimeOut}=60
+    [Documentation]    Waits for all ajax calls to complete until timeout happens
+    ...    Default timeout is 60 seconds
+    :FOR    ${index}    IN RANGE    ${TimeOut}
+    \    ${ActiveThreads}    Execute Javascript    return jQuery.active.toString();
+    \    Log    "index:" + '${index}' + ",Active Threads:"+ '${ActiveThreads}'
+    \    ${Done}=    Set Variable If    '${ActiveThreads}' == '0'    1    0
+    \    Run Keyword If    '${ActiveThreads}' == '0'    Exit For Loop
+    \    Sleep    1s
+    Run Keyword If    '${Done}' != '1'    Fail    Waited for ${TimeOut} seconds to finish all Ajax calls, but no success !!
+
+Launch K2NG
+    Open Browser    https://dev.fideliseducation.com/login
+    Maximize Browser Window

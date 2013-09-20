@@ -1,0 +1,29 @@
+*** Settings ***
+Documentation     Tests basic sanity cases across the product
+...
+...               *Modules Covered*
+...               ------------------------------
+...
+...               _privacy page_
+...
+...               _account settings_
+...
+...               _app authoring page_
+...
+...
+Suite Setup       Launch K2NG
+Suite Teardown    Close All Browsers
+Library           Selenium2Library
+Resource          ../K2nglib.txt
+
+*** Test Cases ***
+Test Login
+    Login As Staff    ajain@amunet.edu    12341234
+    Open Tab    My Apps
+    Click On 'Create New App'
+    Sleep    5s
+    Cancel
+    Capture Page Screenshot    My Apps Page
+    Open Tab    All Community Apps
+    Capture Page Screenshot    All Community Apps Page
+    Click On 'Create New App'
